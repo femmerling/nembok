@@ -5,3 +5,4 @@ setupy.py
 db_repository/
 box/
 *.db
+tmp/
