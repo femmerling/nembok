@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+		<h1>Edit Jempol Entries.</h1>
+		<form id="edit-form" name="jempol_add" method="put" action="/jempol/{{ jempol_item.id }}">
+		<input type="hidden" id="url" value="/jempol/{{ jempol_item.id }}">
+		<table>
+				<tr>
+					<td>User_Id:</td>
+					<td><input type="text" name="user_id" value="{{ jempol_item.user_id }}"/></td>
+				</tr>
+				<tr>
+					<td>Post_Id:</td>
+					<td><input type="text" name="post_id" value="{{ jempol_item.post_id }}"/></td>
+				</tr>
+				<tr>
+					<td>Jempol_Time:</td>
+					<td><input type="text" name="jempol_time" value="{{ jempol_item.jempol_time }}"/></td>
+				</tr>
+				<tr>
+					<td><input id="submit-put" type="submit" name="submit" value="Edit Entry"/></td>
+					<td> </td>
+				</tr>
+		</table>
+		</form>
+{% endblock %}

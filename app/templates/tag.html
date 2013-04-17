@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+		<h1>List of Tag Entries.</h1>
+		<table id="list-view">
+			<thead>
+				<tr>
+					<td><b>ID</td>
+					<td><b>Desc</b></td>
+					<td><b> </td>
+					<td><b> </td>
+				</tr>
+			</thead>
+			{% if tag_entries %}
+			<tbody>
+			{% for entry in tag_entries %}
+				<tr>
+					<td><a href="/tag/{{ entry.id }}">{{ entry.id }}</a></td>
+					<td>{{ entry.desc }}</td>
+					<td><a href="/tag/edit/{{ entry.id }}">Edit</a></td>
+					<td><a id="delete-link" data-callback="/tag/" data-url="/tag/{{ entry.id }}">Delete</a></td>
+				</tr>
+			{% endfor %}
+			</tbody>
+		</table>
+			{% else %}
+		</table>
+		You have no entries yet
+			{% endif %}
+			<br/><br/><b><a id="actions" href="/tag/add">Add new entry</a></b>
+{% endblock %}

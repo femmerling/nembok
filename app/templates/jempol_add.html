@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+		<h1>Add new Jempol Entries.</h1>
+		<form name="jempol_add" method="post" action="/jempol/">
+		<table>
+				<tr>
+					<td>User_Id:</td>
+					<td><input type="text" name="user_id"/></td>
+				</tr>
+				<tr>
+					<td>Post_Id:</td>
+					<td><input type="text" name="post_id"/></td>
+				</tr>
+				<tr>
+					<td>Jempol_Time:</td>
+					<td><input type="text" name="jempol_time"/></td>
+				</tr>
+				<tr>
+					<td><input type="submit" name="submit" value="Add Entry"/></td>
+					<td> </td>
+				</tr>
+		</table>
+		</form>
+{% endblock %}

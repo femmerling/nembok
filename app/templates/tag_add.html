@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+		<h1>Add new Tag Entries.</h1>
+		<form name="tag_add" method="post" action="/tag/">
+		<table>
+				<tr>
+					<td>Desc:</td>
+					<td><input type="text" name="desc"/></td>
+				</tr>
+				<tr>
+					<td><input type="submit" name="submit" value="Add Entry"/></td>
+					<td> </td>
+				</tr>
+		</table>
+		</form>
+{% endblock %}

@@ -1,6 +1,6 @@
 # do not change or move the following lines if you still want to use the box.py auto generator
 from app import app, db
-from models import User, Post
+from models import User, Post, Jempol, Tag
 
 # you can freely change the lines below
 from flask import render_template
@@ -169,4 +169,146 @@ def post_edit_controller(id):
     #this is the controller to edit model entries
     post_item = Post.query.get(id)
     return render_template('post_edit.html', post_item = post_item, title = "Edit Entries")
+
+
+
+########### jempol data model controllers area ###########
+
+@app.route('/jempol/',methods=['GET','POST'],defaults={'id':None})
+@app.route('/jempol/<id>',methods=['GET','PUT','DELETE'])
+def jempol_controller(id):
+    user_id = request.values.get('user_id')
+    post_id = request.values.get('post_id')
+    jempol_time = request.values.get('jempol_time')
+
+    if id:
+        if request.method == 'GET':
+            jempol = Jempol.query.get(id)
+            if jempol:
+                jempol = jempol.dto()
+            if request.values.get('json'):
+                return json.dumps(dict(jempol=jempol))
+            else:
+                return render_template('jempol_view.html', jempol = jempol)
+        elif request.method == 'PUT':
+            jempol_item = Jempol.query.get(id)
+            jempol_item.user_id = user_id
+            jempol_item.post_id = post_id
+            jempol_item.jempol_time = jempol_time
+            db.session.add(jempol_item)
+            db.session.commit()
+            return 'updated'
+        elif request.method == 'DELETE':
+            jempol_item = Jempol.query.get(id)
+            db.session.delete(jempol_item)
+            db.session.commit()
+            return 'deleted'
+        else:
+            return 'Method Not Allowed'
+    else:
+        if request.method == 'GET':
+            jempol_list = Jempol.query.all()
+            if jempol_list:
+                entries = [jempol.dto() for jempol in jempol_list]
+            else:
+                entries=None
+            if request.values.get('json'):
+                return json.dumps(dict(jempol=entries))
+            else:
+                return render_template('jempol.html',jempol_entries = entries, title = "Jempol List")
+        elif request.method == 'POST':
+            new_jempol = Jempol(
+                            user_id = user_id,
+                            post_id = post_id,
+                            jempol_time = jempol_time
+                            )
+
+            db.session.add(new_jempol)
+            db.session.commit()
+            if request.values.get('json'):
+                url = '/jempol/json=true'
+            else:
+                url = '/jempol/'
+            return redirect(url)
+        else:
+            return 'Method Not Allowed'
+
+@app.route('/jempol/add/')
+def jempol_add_controller():
+    #this is the controller to add new model entries
+    return render_template('jempol_add.html', title = "Add New Entry")
+
+@app.route('/jempol/edit/<id>')
+def jempol_edit_controller(id):
+    #this is the controller to edit model entries
+    jempol_item = Jempol.query.get(id)
+    return render_template('jempol_edit.html', jempol_item = jempol_item, title = "Edit Entries")
+
+
+
+########### tag data model controllers area ###########
+
+@app.route('/tag/',methods=['GET','POST'],defaults={'id':None})
+@app.route('/tag/<id>',methods=['GET','PUT','DELETE'])
+def tag_controller(id):
+    desc = request.values.get('desc')
+
+    if id:
+        if request.method == 'GET':
+            tag = Tag.query.get(id)
+            if tag:
+                tag = tag.dto()
+            if request.values.get('json'):
+                return json.dumps(dict(tag=tag))
+            else:
+                return render_template('tag_view.html', tag = tag)
+        elif request.method == 'PUT':
+            tag_item = Tag.query.get(id)
+            tag_item.desc = desc
+            db.session.add(tag_item)
+            db.session.commit()
+            return 'updated'
+        elif request.method == 'DELETE':
+            tag_item = Tag.query.get(id)
+            db.session.delete(tag_item)
+            db.session.commit()
+            return 'deleted'
+        else:
+            return 'Method Not Allowed'
+    else:
+        if request.method == 'GET':
+            tag_list = Tag.query.all()
+            if tag_list:
+                entries = [tag.dto() for tag in tag_list]
+            else:
+                entries=None
+            if request.values.get('json'):
+                return json.dumps(dict(tag=entries))
+            else:
+                return render_template('tag.html',tag_entries = entries, title = "Tag List")
+        elif request.method == 'POST':
+            new_tag = Tag(
+                            desc = desc
+                            )
+
+            db.session.add(new_tag)
+            db.session.commit()
+            if request.values.get('json'):
+                url = '/tag/json=true'
+            else:
+                url = '/tag/'
+            return redirect(url)
+        else:
+            return 'Method Not Allowed'
+
+@app.route('/tag/add/')
+def tag_add_controller():
+    #this is the controller to add new model entries
+    return render_template('tag_add.html', title = "Add New Entry")
+
+@app.route('/tag/edit/<id>')
+def tag_edit_controller(id):
+    #this is the controller to edit model entries
+    tag_item = Tag.query.get(id)
+    return render_template('tag_edit.html', tag_item = tag_item, title = "Edit Entries")
 

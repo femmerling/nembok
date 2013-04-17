@@ -1,5 +1,10 @@
 from app import db
 
+tag_table = db.Table('post_tags',
+    db.Column('post_id', db.Integer, db.ForeignKey('post.id')),
+    db.Column('tag_id', db.Integer, dbForeignKey('tag.id'))
+)
+
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     full_name = db.Column(db.String(50))
@@ -7,6 +12,7 @@ class User(db.Model):
     email = db.Column(db.String(50))
     mini_profile = db.Column(db.Text)
     posts = db.relationship('Post',backref='user',lazy='dynamic')
+    jempols = db.relationship('Jempol',backref='user',lazy='dynamic')
 
     # data transfer object to form JSON
     def dto(self):
@@ -22,6 +28,9 @@ class Post(db.Model):
     title = db.Column(db.String(100))
     content = db.Column(db.Text)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    tags = db.relationship('Tag',secondary=tag_table,backref=db.backref('post_tags'),lazy='dynamic')
+    jempols = db.relationship('Jempol',backref='post',lazy='dynamic')
+	
 
     # data transfer object to form JSON
     def dto(self):
@@ -30,3 +39,28 @@ class Post(db.Model):
             title = self.title,
             content = self.content,
             user_id = self.user_id)
+
+class Jempol(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    post_id = db.Column(db.Integer, db.ForeignKey('post.id'))
+    jempol_time = db.Column(db.DateTime)
+
+    # data transfer object to form JSON
+    def dto(self):
+        return dict(
+            id = self.id,
+            user_id = self.user_id,
+            post_id = self.post_id,
+            jempol_time = self.jempol_time)
+
+class Tag(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    desc = db.Column(db.String(100))
+    tags = db.relationship('Post',secondary=tag_table,backref=db.backref('post_tags'),lazy='dynamic')
+
+    # data transfer object to form JSON
+    def dto(self):
+        return dict(
+            id = self.id,
+            desc = self.desc)

@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block content %}
+		<h1>List of Jempol Entries.</h1>
+		<table id="list-view">
+			<thead>
+				<tr>
+					<td><b>ID</td>
+					<td><b>User_Id</b></td>
+					<td><b>Post_Id</b></td>
+					<td><b>Jempol_Time</b></td>
+					<td><b> </td>
+					<td><b> </td>
+				</tr>
+			</thead>
+			{% if jempol_entries %}
+			<tbody>
+			{% for entry in jempol_entries %}
+				<tr>
+					<td><a href="/jempol/{{ entry.id }}">{{ entry.id }}</a></td>
+					<td>{{ entry.user_id }}</td>
+					<td>{{ entry.post_id }}</td>
+					<td>{{ entry.jempol_time }}</td>
+					<td><a href="/jempol/edit/{{ entry.id }}">Edit</a></td>
+					<td><a id="delete-link" data-callback="/jempol/" data-url="/jempol/{{ entry.id }}">Delete</a></td>
+				</tr>
+			{% endfor %}
+			</tbody>
+		</table>
+			{% else %}
+		</table>
+		You have no entries yet
+			{% endif %}
+			<br/><br/><b><a id="actions" href="/jempol/add">Add new entry</a></b>
+{% endblock %}
