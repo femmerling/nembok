@@ -2,7 +2,7 @@ from app import db
 
 tag_table = db.Table('post_tags',
     db.Column('post_id', db.Integer, db.ForeignKey('post.id')),
-    db.Column('tag_id', db.Integer, dbForeignKey('tag.id'))
+    db.Column('tag_id', db.Integer, db.ForeignKey('tag.id'))
 )
 
 class User(db.Model):
