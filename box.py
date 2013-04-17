@@ -237,7 +237,7 @@ def generate_controller(model_name, model_components):
     controller_file.write("        elif request.method == 'PUT':\n")
     controller_file.write("            " + model_name + "_item = " + model_name.title() + ".query.get(id)\n")
     for component in model_components:
-        controller_file.write("        " + model_name + "_item." + component['field_name'].lower() + " = " + component['field_name'].lower() + "\n")
+        controller_file.write("            " + model_name + "_item." + component['field_name'].lower() + " = " + component['field_name'].lower() + "\n")
     controller_file.write("            db.session.add(" + model_name + "_item)\n")
     controller_file.write("            db.session.commit()\n")
     controller_file.write("            return 'updated'\n")
@@ -268,8 +268,8 @@ def generate_controller(model_name, model_components):
             controller_file.write("                            " + component['field_name'].lower() + ' = ' + component['field_name'].lower() + '\n')
         mod_counter = mod_counter + 1
     controller_file.write("                            )\n")
-    controller_file.write("\n                db.session.add(new_" + model_name + ")\n")
-    controller_file.write("                db.session.commit()\n")
+    controller_file.write("\n            db.session.add(new_" + model_name + ")\n")
+    controller_file.write("            db.session.commit()\n")
     controller_file.write("            if request.values.get('json'):\n")
     controller_file.write("                url = '/"+model_name+"/json=true'\n")
     controller_file.write("            else:\n")
