@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+		<h1>View User single entry.</h1>
+		<table>
+				<tr>
+					<td>Full_Name:</td>
+					<td>{{ user.full_name }}</td>
+				</tr>
+				<tr>
+					<td>Username:</td>
+					<td>{{ user.username }}</td>
+				</tr>
+				<tr>
+					<td>Email:</td>
+					<td>{{ user.email }}</td>
+				</tr>
+				<tr>
+					<td>Mini_Profile:</td>
+					<td>{{ user.mini_profile }}</td>
+				</tr>
+		</table>
+{% endblock %}

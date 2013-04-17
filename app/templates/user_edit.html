@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+		<h1>Edit User Entries.</h1>
+		<form id="edit-form" name="user_add" method="put" action="/user/{{ user_item.id }}">
+		<input type="hidden" id="url" value="/user/{{ user_item.id }}">
+		<table>
+				<tr>
+					<td>Full_Name:</td>
+					<td><input type="text" name="full_name" value="{{ user_item.full_name }}"/></td>
+				</tr>
+				<tr>
+					<td>Username:</td>
+					<td><input type="text" name="username" value="{{ user_item.username }}"/></td>
+				</tr>
+				<tr>
+					<td>Email:</td>
+					<td><input type="text" name="email" value="{{ user_item.email }}"/></td>
+				</tr>
+				<tr>
+					<td>Mini_Profile:</td>
+					<td><input type="text" name="mini_profile" value="{{ user_item.mini_profile }}"/></td>
+				</tr>
+				<tr>
+					<td><input id="submit-put" type="submit" name="submit" value="Edit Entry"/></td>
+					<td> </td>
+				</tr>
+		</table>
+		</form>
+{% endblock %}
