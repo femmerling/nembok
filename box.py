@@ -102,7 +102,7 @@ def add_model(model_name, model_components):
     # Write the class definition.
     model_file.write('\n')
     model_file.write('class ' + model_name + '(db.Model):\n')
-    model_file.write('\tid = db.Column(db.Integer, primary_key=True)\n')
+    model_file.write('    id = db.Column(db.Integer, primary_key=True)\n')
 
     ## Add the model fields.
     ### First check for the data types and standardize it.
@@ -157,9 +157,9 @@ def add_model(model_name, model_components):
 
     ### If it matches write the model fields into the model files.
         if len(component['field_property']) == 2:
-            model_file.write('  ' + component['field_name'].lower() + ' = db.Column(db.' + data_type + '(' + component['field_property'][1] + '))\n')
+            model_file.write('    ' + component['field_name'].lower() + ' = db.Column(db.' + data_type + '(' + component['field_property'][1] + '))\n')
         else:
-            model_file.write('  ' + component['field_name'].lower() + ' = db.Column(db.' + data_type + ')\n')
+            model_file.write('    ' + component['field_name'].lower() + ' = db.Column(db.' + data_type + ')\n')
 
     ## Create the class method for data transfer object (dto) for JSON representation.
     model_file.write('\n')
@@ -169,7 +169,7 @@ def add_model(model_name, model_components):
 
     ### Add the json component for all fields.
     mod_counter = 1
-    model_file.write('      id = self.id,\n')
+    model_file.write('            id = self.id,\n')
     max_mod_index = len(model_components)
 
     for component in model_components:
