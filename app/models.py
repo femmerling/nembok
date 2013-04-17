@@ -13,6 +13,7 @@ class User(db.Model):
     mini_profile = db.Column(db.Text)
     posts = db.relationship('Post',backref='user',lazy='dynamic')
     jempols = db.relationship('Jempol',backref='user',lazy='dynamic')
+    comments = db.relationship('Comment',backref='user',lazy='dynamic')
 
     # data transfer object to form JSON
     def dto(self):
@@ -30,7 +31,7 @@ class Post(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     tags = db.relationship('Tag',secondary=tag_table,backref=db.backref('post_tags'),lazy='dynamic')
     jempols = db.relationship('Jempol',backref='post',lazy='dynamic')
-	
+    comments = db.relationship('Comment',backref='user',lazy='dynamic')
 
     # data transfer object to form JSON
     def dto(self):
@@ -64,3 +65,19 @@ class Tag(db.Model):
         return dict(
             id = self.id,
             desc = self.desc)
+
+class Comment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    post_id = db.Column(db.Integer, db.ForeignKey('post.id'))
+    comment = db.Column(db.Text)
+    comment_time = db.Column(db.DateTime)
+
+    # data transfer object to form JSON
+    def dto(self):
+        return dict(
+            id = self.id,
+            user_id = self.user_id,
+            post_id = self.post_id,
+            comment = self.comment,
+            comment_time = self.comment_time)

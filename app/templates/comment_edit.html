@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+		<h1>Edit Comment Entries.</h1>
+		<form id="edit-form" name="comment_add" method="put" action="/comment/{{ comment_item.id }}">
+		<input type="hidden" id="url" value="/comment/{{ comment_item.id }}">
+		<table>
+				<tr>
+					<td>User_Id:</td>
+					<td><input type="text" name="user_id" value="{{ comment_item.user_id }}"/></td>
+				</tr>
+				<tr>
+					<td>Post_Id:</td>
+					<td><input type="text" name="post_id" value="{{ comment_item.post_id }}"/></td>
+				</tr>
+				<tr>
+					<td>Comment:</td>
+					<td><input type="text" name="comment" value="{{ comment_item.comment }}"/></td>
+				</tr>
+				<tr>
+					<td>Comment_Time:</td>
+					<td><input type="text" name="comment_time" value="{{ comment_item.comment_time }}"/></td>
+				</tr>
+				<tr>
+					<td><input id="submit-put" type="submit" name="submit" value="Edit Entry"/></td>
+					<td> </td>
+				</tr>
+		</table>
+		</form>
+{% endblock %}
