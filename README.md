@@ -29,7 +29,6 @@ Jalankan production server dengan menggunakan:
 # Kolaborasi
 
 1. Fork repo `nembok`.
-2. Set remote URL, contoh: `git remote add upstream git://github.com/femmerling/nembok.git`.
-3. Buat topic branch, contoh: `git checkout -b feature-A`.
-4. Develop feature yang Anda inginkan, lalu push branch `feature-A`.
-5. Pull request ke repo ini.
+2. Buat topic branch, contoh: `git checkout -b feature-A`.
+3. Develop feature yang Anda inginkan, lalu push branch `feature-A`.
+4. Pull request ke repo ini.
