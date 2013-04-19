@@ -1,4 +1,5 @@
-# do not change or move the following lines if you still want to use the box.py auto generator
+# do not change or move the following lines
+# if you still want to use the box.py auto generator
 from app import app, db
 from models import User, Post, Jempol, Tag, Comment
 
@@ -15,16 +16,18 @@ import logging
 from helpers import generate_key
 # define global variables here
 
+
 # home root controller
 @app.route('/')
 def index():
-	# define your controller here
-	return render_template('welcome.html')
+    # define your controller here
+    return render_template('welcome.html')
 
 ########### user data model controllers area ###########
 
-@app.route('/user/',methods=['GET','POST'],defaults={'id':None})
-@app.route('/user/<id>',methods=['GET','PUT','DELETE'])
+
+@app.route('/user/', methods=['GET', 'POST'], defaults={'id': None})
+@app.route('/user/<id>', methods=['GET', 'PUT', 'DELETE'])
 def user_controller(id):
     full_name = request.values.get('full_name')
     username = request.values.get('username')
@@ -39,7 +42,7 @@ def user_controller(id):
             if request.values.get('json'):
                 return json.dumps(dict(user=user))
             else:
-                return render_template('user_view.html', user = user)
+                return render_template('user/user_view.html', user=user)
         elif request.method == 'PUT':
             user_item = User.query.get(id)
             user_item.full_name = full_name
@@ -62,18 +65,22 @@ def user_controller(id):
             if user_list:
                 entries = [user.dto() for user in user_list]
             else:
-                entries=None
+                entries = None
             if request.values.get('json'):
                 return json.dumps(dict(user=entries))
             else:
-                return render_template('user.html',user_entries = entries, title = "User List")
+                return render_template(
+                    'user/user.html',
+                    user_entries=entries,
+                    title="User List",
+                    )
         elif request.method == 'POST':
             new_user = User(
-                            full_name = full_name,
-                            username = username,
-                            email = email,
-                            mini_profile = mini_profile
-                            )
+                full_name=full_name,
+                username=username,
+                email=email,
+                mini_profile=mini_profile,
+                )
 
             db.session.add(new_user)
             db.session.commit()
@@ -85,16 +92,19 @@ def user_controller(id):
         else:
             return 'Method Not Allowed'
 
+
 @app.route('/user/add/')
 def user_add_controller():
-    #this is the controller to add new model entries
-    return render_template('user_add.html', title = "Add New Entry")
+    # this is the controller to add new model entries
+    return render_template('user/user_add.html', title="Add New Entry")
+
 
 @app.route('/user/edit/<id>')
 def user_edit_controller(id):
     #this is the controller to edit model entries
     user_item = User.query.get(id)
-    return render_template('user_edit.html', user_item = user_item, title = "Edit Entries")
+    return render_template(
+        'user/user_edit.html', user_item=user_item, title="Edit Entries")
 
 
 
@@ -388,4 +398,3 @@ def comment_edit_controller(id):
     #this is the controller to edit model entries
     comment_item = Comment.query.get(id)
     return render_template('comment_edit.html', comment_item = comment_item, title = "Edit Entries")
-
