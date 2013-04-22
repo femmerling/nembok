@@ -1,8 +1,9 @@
 from flask import Flask
-from flask.ext.sqlalchemy import SQLAlchemy
+
+from database import db
 
 app = Flask(__name__)
 app.config.from_object('config')
-db = SQLAlchemy(app)
+db.init_app(app)
 
-from app import main, models
+import main
