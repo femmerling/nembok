@@ -4,8 +4,8 @@ from flask import redirect
 from flask import render_template
 from flask import request
 
-from database import db
-from models import User
+from ..database import db
+from ..models import User
 
 ########### user data model controllers area ###########
 
