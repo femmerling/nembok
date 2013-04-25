@@ -3,9 +3,11 @@ from flask import jsonify
 from flask import redirect
 from flask import render_template
 from flask import request
+from flask import url_for
 
 from ..database import db
 from ..models import User
+from app import github
 
 ########### user data model controllers area ###########
 
@@ -91,3 +93,40 @@ def user_edit_controller(id):
     user_item = User.query.get(id)
     return render_template(
         'user/user_edit.html', user_item=user_item, title="Edit Entries")
+
+
+@user_view.route('/auth')
+def user_auth_controller():
+    redirect_uri = url_for(
+        '.user_auth_github_controller',
+        next=request.args.get('next') or request.referrer or None,
+        _external=True,
+        )
+    params = {'redirect_uri': redirect_uri}
+    return redirect(github.get_authorize_url(**params))
+
+
+@user_view.route('/auth/github')
+def user_auth_github_controller():
+    if not 'code' in request.args:
+        return 'Access denied: error=%s' % (request.args['error'])
+
+    redirect_uri = url_for('.user_auth_github_controller', _external=True)
+    data = dict(code=request.args['code'], redirect_uri=redirect_uri)
+
+    gh_session = github.get_auth_session(data=data)
+    user_data = gh_session.get('user').json()
+
+    try:
+        user = User()
+        user.username = user_data['login']
+        user.full_name = user_data['name']
+        user.mini_profile = user_data['bio']
+        user.email = user_data['email']
+        db.session.add(user)
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        raise
+
+    return redirect(url_for('index'))
