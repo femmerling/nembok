@@ -6,3 +6,4 @@ db_repository/
 box/
 *.db
 tmp/
+local_config.py
