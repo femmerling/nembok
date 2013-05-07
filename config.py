@@ -8,6 +8,7 @@ SQLALCHEMY_MIGRATE_REPO = os.path.join(BASEDIR, 'db_repository')
 # additional_packages = ['flask-mail','nose']
 ADDITIONAL_PACKAGES = [
     'rauth',
+    'flask-wtf',
     ]
 
 # Select the database connectivity that you wish to use.

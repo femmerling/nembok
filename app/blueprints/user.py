@@ -6,68 +6,58 @@ from flask import request
 from flask import url_for
 from flask import session
 
-from ..database import db
-from ..models import User
-from app import github
+from flask.ext.wtf import Form
+from wtforms import TextField
+from wtforms import TextAreaField
+from wtforms.validators import Email
 
-########### user data model controllers area ###########
+from app.database import db
+from app.models import User
+from app import github
 
 user_view = Blueprint('user_view', __name__)
 
 
-@user_view.route('/user/', methods=['GET'], defaults={'id': None})
-@user_view.route('/user/<id>', methods=['GET', 'PUT'])
+class EditUserForm(Form):
+    full_name = TextField('Full Name')
+    email = TextField('Email', validators=[Email()])
+    mini_profile = TextAreaField('Bio')
+
+
+@user_view.route('/user/', defaults={'id': None})
+@user_view.route('/user/<id>')
 def user_controller(id):
-    full_name = request.values.get('full_name')
-    username = request.values.get('username')
-    email = request.values.get('email')
-    mini_profile = request.values.get('mini_profile')
-
     if id:
-        if request.method == 'GET':
-            user = User.query.get(id)
-            if user:
-                user = user.dto()
-            if request.values.get('json'):
-                return jsonify(dict(user=user))
-            else:
-                return render_template('user/user_view.html', user=user)
-        elif request.method == 'PUT':
-            user_item = User.query.get(id)
-            user_item.full_name = full_name
-            user_item.username = username
-            user_item.email = email
-            user_item.mini_profile = mini_profile
-            db.session.add(user_item)
-            db.session.commit()
-            return 'updated'
-        else:
-            return 'Method Not Allowed'
-    else:
-        if request.method == 'GET':
-            user_list = User.query.all()
-            if user_list:
-                entries = [user.dto() for user in user_list]
-            else:
-                entries = None
-            if request.values.get('json'):
-                return jsonify(dict(user=entries))
-            else:
-                return render_template(
-                    'user/user.html',
-                    user_entries=entries,
-                    title="User List",
-                    )
-        else:
-            return 'Method Not Allowed'
+        user = User.query.get(id)
+        if user:
+            user = user.dto()
+        if request.values.get('json'):
+            return jsonify(dict(user=user))
+        return render_template('user/user_view.html', user=user)
 
+    user_list = User.query.all()
+    entries = [user.dto() for user in user_list]
 
-@user_view.route('/user/edit/<id>')
-def user_edit_controller(id):
-    #this is the controller to edit model entries
-    user_item = User.query.get(id)
+    if request.values.get('json'):
+        return jsonify(dict(user=entries))
+
     return render_template(
-        'user/user_edit.html', user_item=user_item, title="Edit Entries")
+        'user/user.html', user_entries=entries, title="User List")
+
+
+@user_view.route('/user/edit/<id>', methods=['GET', 'POST'])
+def user_edit_controller(id):
+    user = User.query.get(id)
+    form = EditUserForm(obj=user)
+
+    if form.validate_on_submit():
+        form.populate_obj(user)
+        db.session.add(user)
+        db.session.commit()
+        return redirect(url_for('.user_controller'))
+
+    return render_template(
+        'user/user_edit.html', form=form, title="Edit Entries")
 
 
 @user_view.route('/login/')
