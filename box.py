@@ -7,8 +7,13 @@ import platform
 import re
 
 from migrate.versioning import api
-from app import db
+from app import app
+from app.database import db
 from config import BASEDIR, SQLALCHEMY_DATABASE_URI, SQLALCHEMY_MIGRATE_REPO, SERVER_PORT
+
+# Register current app
+db.app = app
+
 
 # This variable will be used to check the valid data types enterred by the user in box.py -n command.
 valid_data_types = [
@@ -565,7 +570,7 @@ if len(sys.argv) > 1:
             run_gunicorn(sys.argv[2:])
         else:
             run_gunicorn()
-        
+
 
     elif sysinput == '--testrun' or sysinput == '-t':
         run_testrun()

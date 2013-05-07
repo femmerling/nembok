@@ -23,7 +23,11 @@ class User(db.Model):
             full_name=self.full_name,
             username=self.username,
             email=self.email,
-            mini_profile=self.mini_profile)
+            mini_profile=self.mini_profile,
+            )
+
+    def find_by_username(self, username):
+        return self.query.filter_by(username=username).limit(1).first()
 
 
 class Post(db.Model):

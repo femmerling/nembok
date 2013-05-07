@@ -95,7 +95,7 @@ def user_edit_controller(id):
         'user/user_edit.html', user_item=user_item, title="Edit Entries")
 
 
-@user_view.route('/auth')
+@user_view.route('/auth/')
 def user_auth_controller():
     redirect_uri = url_for(
         '.user_auth_github_controller',
@@ -106,7 +106,7 @@ def user_auth_controller():
     return redirect(github.get_authorize_url(**params))
 
 
-@user_view.route('/auth/github')
+@user_view.route('/auth/github/')
 def user_auth_github_controller():
     if not 'code' in request.args:
         return 'Access denied: error=%s' % (request.args['error'])
@@ -117,16 +117,23 @@ def user_auth_github_controller():
     gh_session = github.get_auth_session(data=data)
     user_data = gh_session.get('user').json()
 
-    try:
-        user = User()
-        user.username = user_data['login']
-        user.full_name = user_data['name']
-        user.mini_profile = user_data['bio']
-        user.email = user_data['email']
-        db.session.add(user)
-        db.session.commit()
-    except Exception:
-        db.session.rollback()
-        raise
+    user = User()
+
+    # GitHub uses unique username, what we need to do is matching
+    # the imported GitHub user with our existing user.
+    # If we already have a matched user, simply skip the user data insertion.
+    existing_user = user.find_by_username(user_data['login'])
+
+    if existing_user is None:
+        try:
+            user.username = user_data['login']
+            user.full_name = user_data['name']
+            user.mini_profile = user_data['bio']
+            user.email = user_data['email']
+            db.session.add(user)
+            db.session.commit()
+        except Exception:
+            db.session.rollback()
+            raise
 
     return redirect(url_for('index'))
