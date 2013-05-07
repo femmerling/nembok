@@ -4,6 +4,7 @@ from flask import redirect
 from flask import render_template
 from flask import request
 from flask import url_for
+from flask import session
 
 from ..database import db
 from ..models import User
@@ -14,8 +15,8 @@ from app import github
 user_view = Blueprint('user_view', __name__)
 
 
-@user_view.route('/user/', methods=['GET', 'POST'], defaults={'id': None})
-@user_view.route('/user/<id>', methods=['GET', 'PUT', 'DELETE'])
+@user_view.route('/user/', methods=['GET'], defaults={'id': None})
+@user_view.route('/user/<id>', methods=['GET', 'PUT'])
 def user_controller(id):
     full_name = request.values.get('full_name')
     username = request.values.get('username')
@@ -40,11 +41,6 @@ def user_controller(id):
             db.session.add(user_item)
             db.session.commit()
             return 'updated'
-        elif request.method == 'DELETE':
-            user_item = User.query.get(id)
-            db.session.delete(user_item)
-            db.session.commit()
-            return 'deleted'
         else:
             return 'Method Not Allowed'
     else:
@@ -62,29 +58,8 @@ def user_controller(id):
                     user_entries=entries,
                     title="User List",
                     )
-        elif request.method == 'POST':
-            new_user = User(
-                full_name=full_name,
-                username=username,
-                email=email,
-                mini_profile=mini_profile,
-                )
-
-            db.session.add(new_user)
-            db.session.commit()
-            if request.values.get('json'):
-                url = '/user/json=true'
-            else:
-                url = '/user/'
-            return redirect(url)
         else:
             return 'Method Not Allowed'
-
-
-@user_view.route('/user/add/')
-def user_add_controller():
-    # this is the controller to add new model entries
-    return render_template('user/user_add.html', title="Add New Entry")
 
 
 @user_view.route('/user/edit/<id>')
@@ -95,10 +70,13 @@ def user_edit_controller(id):
         'user/user_edit.html', user_item=user_item, title="Edit Entries")
 
 
-@user_view.route('/auth/')
-def user_auth_controller():
+@user_view.route('/login/')
+def user_login_controller():
+    if session.get('user') is not None:
+        return redirect(url_for('index'))
+
     redirect_uri = url_for(
-        '.user_auth_github_controller',
+        '.user_login_github_controller',
         next=request.args.get('next') or request.referrer or None,
         _external=True,
         )
@@ -106,12 +84,15 @@ def user_auth_controller():
     return redirect(github.get_authorize_url(**params))
 
 
-@user_view.route('/auth/github/')
-def user_auth_github_controller():
+@user_view.route('/login/github/')
+def user_login_github_controller():
+    if session.get('user') is not None:
+        return redirect(url_for('index'))
+
     if not 'code' in request.args:
         return 'Access denied: error=%s' % (request.args['error'])
 
-    redirect_uri = url_for('.user_auth_github_controller', _external=True)
+    redirect_uri = url_for('.user_login_github_controller', _external=True)
     data = dict(code=request.args['code'], redirect_uri=redirect_uri)
 
     gh_session = github.get_auth_session(data=data)
@@ -132,8 +113,27 @@ def user_auth_github_controller():
             user.email = user_data['email']
             db.session.add(user)
             db.session.commit()
+
+            session['user'] = {
+                'id': user.id,
+                'username': user.username,
+                'full_name': user.full_name,
+            }
         except Exception:
             db.session.rollback()
             raise
+    else:
+        session['user'] = {
+            'id': existing_user.id,
+            'username': existing_user.username,
+            'full_name': existing_user.full_name,
+        }
 
+    return redirect(url_for('index'))
+
+
+@user_view.route('/logout/')
+def user_logout_controller():
+    if session.get('user') is not None:
+        session['user'] = None
     return redirect(url_for('index'))
